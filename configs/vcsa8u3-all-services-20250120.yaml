@@ -1,0 +1,984 @@
+services:
+  lwsmd:
+    servicename: lwsmd
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: VMware Likewise Service Manager Daemon
+    id: 1
+    nameinlog: lwsmd
+    level: 1
+    type: system-control
+    profile: []
+    status: running
+    log:
+      - ./likewise/likewise.log
+    dp_service: []
+    parent_id: null
+  vmafdd:
+    servicename: vmafdd
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: VMware Authentication Framework Daemon
+    id: 2
+    nameinlog: vmafdd
+    level: 1
+    type: system-control
+    profile: []
+    status: running
+    log:
+      - ./vmafdd/vmafdd.log
+    dp_service: []
+    parent_id: null
+  vmdird:
+    servicename: vmdird
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: VMware Directory Service
+    id: 3
+    nameinlog: vmdird
+    level: 1
+    type: system-control
+    profile: []
+    status: running
+    log:
+      - ./vmdird/vmdird.log
+    dp_service: []
+    parent_id: null
+  vmcad:
+    servicename: vmcad
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: VMware Certificate Service
+    id: 4
+    nameinlog: vmcad
+    level: 1
+    type: system-control
+    profile: []
+    status: running
+    log:
+      - ./vmcad/vmcad.log
+    dp_service: []
+    parent_id: null
+  vmware-vmon:
+    servicename: vmware-vmon
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: VMware Service Lifecycle Manager
+    id: 5
+    nameinlog: vmware-vmon
+    level: 1
+    type: system-control
+    profile: []
+    status: running
+    log:
+      - ./vmon/vmon.log
+    dp_service: []
+    parent_service: 0
+    parent_id: null
+  envoy:
+    servicename: envoy
+    serviceprestart: ''
+    servicehealthcmd: envoy-healthcmd
+    description: VMware Envoy Proxy
+    id: 11
+    nameinlog: envoy
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./envoy/envoy.log
+    dp_service: []
+    parent_id: 5
+  envoy-sidecar:
+    servicename: envoy-sidecar
+    serviceprestart: ''
+    servicehealthcmd: envoy-sidecar-healthcmd
+    description: VMware Envoy Proxy-Sidecar
+    id: 12
+    nameinlog: envoy-sidecar
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./envoy-sidecar/envoy.log
+    dp_service: []
+    parent_id: 11
+  envoy-hgw:
+    servicename: envoy-hgw
+    serviceprestart: ''
+    servicehealthcmd: envoy-hgw-healthcmd
+    description: VMware Envoy HTTP Gateway
+    id: 13
+    nameinlog: envoy-hgw
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./envoy-hgw/envoy.log
+    dp_service: []
+    parent_id: 12
+  rhttpproxy:
+    servicename: rhttpproxy
+    serviceprestart: rhttpproxy-prestart
+    servicehealthcmd: rhttpproxy-healthcmd
+    description: VMware Reverse HTTP Proxy
+    id: 14
+    nameinlog: rhttpproxy
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./rhttpproxy/rhttpproxy.log
+    dp_service:
+      - vmafdd
+    parent_id: 13
+  vmware-vpostgres:
+    servicename: vmware-vpostgres
+    serviceprestart: vmware-vpostgres-prestart
+    servicehealthcmd: vmware-vpostgres-healthcmd
+    description: VMware PostgreSQL Database Service
+    id: 15
+    nameinlog: vmware-vpostgres
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - CRITICAL
+    status: unknown
+    log:
+      - ./vpostgres/postgresql.log
+    dp_service: []
+    parent_id: 14
+  vtsdb:
+    servicename: vtsdb
+    serviceprestart: vtsdb-prestart
+    servicehealthcmd: vtsdb-healthcmd
+    description: VMware Time Series Database Service
+    id: 16
+    nameinlog: vtsdb
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./vtsdb/vtsdb.log
+    dp_service:
+      - vmware-vpostgres
+    parent_id: 15
+  vmware-postgres-archiver:
+    servicename: vmware-postgres-archiver
+    serviceprestart: vmware-postgres-archiver-prestart
+    servicehealthcmd: vmware-postgres-archiver-healthcmd
+    description: VMware PostgreSQL Archiver Service
+    id: 17
+    nameinlog: vmware-postgres-archiver
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./vpostgres/archiver.log
+    dp_service:
+      - vmware-vpostgres
+    parent_id: 16
+  eam:
+    servicename: eam
+    serviceprestart: eam-prestart
+    servicehealthcmd: eam-healthcmd
+    description: VMware ESX Agent Manager
+    id: 18
+    nameinlog: eam
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./eam/eam.log
+    dp_service: []
+    parent_id: 17
+  lookupsvc:
+    servicename: lookupsvc
+    serviceprestart: lookupsvc-prestart
+    servicehealthcmd: lookupsvc-healthcmd
+    description: VMware Lookup Service
+    id: 19
+    nameinlog: lookupsvc
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./lookupservice/lookupservice.log
+    dp_service:
+      - rhttpproxy
+      - vmware-vpostgres
+    parent_id: 18
+  trustmanagement:
+    servicename: trustmanagement
+    serviceprestart: trustmanagement-prestart
+    servicehealthcmd: trustmanagement-healthcmd
+    description: VMware Trust Management Service
+    id: 20
+    nameinlog: trustmanagement
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./trustmanagement/trustmanagement.log
+    dp_service:
+      - lookupsvc
+    parent_id: 19
+  vc-ws1a-broker:
+    servicename: vc-ws1a-broker
+    serviceprestart: vc-ws1a-broker-prestart
+    servicehealthcmd: vc-ws1a-broker-healthcmd
+    description: VMware Workspace ONE Access Broker
+    id: 21
+    nameinlog: vc-ws1a-broker
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./ws1a/broker.log
+    dp_service:
+      - rhttpproxy
+      - vmware-vmon
+      - vmware-vpostgres
+    parent_id: 20
+  sts:
+    servicename: sts
+    serviceprestart: sts-prestart
+    servicehealthcmd: sts-healthcmd
+    description: VMware Security Token Service
+    id: 22
+    nameinlog: sts
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./sts/sts.log
+    dp_service:
+      - lookupsvc
+    parent_id: 21
+  vpxd:
+    servicename: vpxd
+    serviceprestart: vpxd-prestart
+    servicehealthcmd: vpxd-healthcmd
+    description: VMware vCenter Server Service
+    id: 23
+    nameinlog: vpxd
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./vpxd/vpxd.log
+    dp_service:
+      - lookupsvc
+      - sts
+      - vmware-vpostgres
+    parent_id: 22
+  sca:
+    servicename: sca
+    serviceprestart: sca-prestart
+    servicehealthcmd: sca-healthcmd
+    description: VMware Service Control Agent
+    id: 24
+    nameinlog: sca
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./sca/sca.log
+    dp_service:
+      - lookupsvc
+      - rhttpproxy
+      - sts
+    parent_id: 23
+  vlcm:
+    servicename: vlcm
+    serviceprestart: vlcm-prestart
+    servicehealthcmd: vlcm-healthcmd
+    description: VMware vSphere Lifecycle Manager
+    id: 25
+    nameinlog: vlcm
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./vlcm/vlcm.log
+    dp_service:
+      - lookupsvc
+      - vmware-vpostgres
+      - vpxd
+    parent_id: 24
+  pschealth:
+    servicename: pschealth
+    serviceprestart: ''
+    servicehealthcmd: pschealth-healthcmd
+    description: VMware Platform Services Controller Health
+    id: 26
+    nameinlog: pschealth
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./psc/health.log
+    dp_service:
+      - vpxd
+    parent_id: 25
+  cis-license:
+    servicename: cis-license
+    serviceprestart: cis-license-prestart
+    servicehealthcmd: cis-license-healthcmd
+    description: VMware License Service
+    id: 27
+    nameinlog: cis-license
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./license/license.log
+    dp_service:
+      - envoy
+      - lookupsvc
+      - sts
+    parent_id: 26
+  vapi-endpoint:
+    servicename: vapi-endpoint
+    serviceprestart: vapi-endpoint-prestart
+    servicehealthcmd: vapi-endpoint-healthcmd
+    description: VMware vSphere API Endpoint
+    id: 28
+    nameinlog: vapi-endpoint
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./vapi/endpoint.log
+    dp_service:
+      - envoy
+      - lookupsvc
+    parent_id: 27
+  vsan-health:
+    servicename: vsan-health
+    serviceprestart: vsan-health-prestart
+    servicehealthcmd: vsan-health-healthcmd
+    description: VMware vSAN Health Service
+    id: 29
+    nameinlog: vsan-health
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./vsan/health.log
+    dp_service:
+      - vmafdd
+      - vmware-vpostgres
+      - vpxd
+    parent_id: 28
+  vsm:
+    servicename: vsm
+    serviceprestart: vsm-prestart
+    servicehealthcmd: vsm-healthcmd
+    description: VMware vService Manager
+    id: 30
+    nameinlog: vsm
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./vsm/vsm.log
+    dp_service:
+      - vpxd
+    parent_id: 29
+  vpxd-svcs:
+    servicename: vpxd-svcs
+    serviceprestart: vpxd-svcs-prestart
+    servicehealthcmd: vpxd-svcs-healthcmd
+    description: VMware vCenter Server Services
+    id: 31
+    nameinlog: vpxd-svcs
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./vpxd/svcs.log
+    dp_service:
+      - lookupsvc
+      - sts
+      - vmware-vpostgres
+    parent_id: 30
+  sps:
+    servicename: sps
+    serviceprestart: sps-prestart
+    servicehealthcmd: sps-healthcmd
+    description: VMware Storage Policy Service
+    id: 32
+    nameinlog: sps
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./sps/sps.log
+    dp_service:
+      - lookupsvc
+    parent_id: 31
+  analytics:
+    servicename: analytics
+    serviceprestart: analytics-prestart
+    servicehealthcmd: analytics-healthcmd
+    description: VMware Analytics Service
+    id: 33
+    nameinlog: analytics
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./analytics/analytics.log
+    dp_service:
+      - envoy
+      - lookupsvc
+      - vmafdd
+      - vpxd
+    parent_id: 32
+  vstats:
+    servicename: vstats
+    serviceprestart: vstats-prestart
+    servicehealthcmd: vstats-healthcmd
+    description: VMware vSphere Stats Service
+    id: 34
+    nameinlog: vstats
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./vstats/vstats.log
+    dp_service:
+      - lookupsvc
+      - vmware-vpostgres
+      - vpxd
+      - vpxd-svcs
+      - vtsdb
+    parent_id: 33
+  certificateauthority:
+    servicename: certificateauthority
+    serviceprestart: certificateauthority-prestart
+    servicehealthcmd: certificateauthority-healthcmd
+    description: VMware Certificate Authority
+    id: 35
+    nameinlog: certificateauthority
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./ca/ca.log
+    dp_service:
+      - lookupsvc
+      - sts
+      - vpxd-svcs
+    parent_id: 34
+  observability-vapi:
+    servicename: observability-vapi
+    serviceprestart: observability-vapi-prestart
+    servicehealthcmd: observability-vapi-healthcmd
+    description: VMware Observability API
+    id: 36
+    nameinlog: observability-vapi
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./observability/vapi.log
+    dp_service:
+      - lookupsvc
+      - vpxd-svcs
+    parent_id: 35
+  certificatemanagement:
+    servicename: certificatemanagement
+    serviceprestart: certificatemanagement-prestart
+    servicehealthcmd: certificatemanagement-healthcmd
+    description: VMware Certificate Management
+    id: 37
+    nameinlog: certificatemanagement
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./certmgmt/certmgmt.log
+    dp_service:
+      - lookupsvc
+      - sts
+      - vpxd-svcs
+    parent_id: 36
+  topologysvc:
+    servicename: topologysvc
+    serviceprestart: topologysvc-prestart
+    servicehealthcmd: topologysvc-healthcmd
+    description: VMware Topology Service
+    id: 38
+    nameinlog: topologysvc
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./topology/topology.log
+    dp_service:
+      - lookupsvc
+      - sts
+      - vpxd-svcs
+    parent_id: 37
+  wcp:
+    servicename: wcp
+    serviceprestart: wcp-healthcmd
+    servicehealthcmd: wcp-prestart
+    description: VMware Workload Control Plane
+    id: 39
+    nameinlog: wcp
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ./wcp/wcp.log
+    dp_service:
+      - cis-license
+      - eam
+      - envoy-sidecar
+      - lookupsvc
+      - sts
+      - trustmanagement
+      - vapi-endpoint
+      - vmware-vpostgres
+      - vpxd
+      - vpxd-svcs
+    parent_id: 38
+  applmgmt:
+    servicename: applmgmt
+    serviceprestart: applmgmt-prestart
+    servicehealthcmd: applmgmt-healthcmd
+    description: VMware Appliance Management Service
+    id: 40
+    nameinlog: applmgmt
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./applmgmt/applmgmt.log
+    dp_service:
+      - lookupsvc
+      - statsmonitor
+      - vpxd-svcs
+    parent_id: 39
+  updatemgr:
+    servicename: updatemgr
+    serviceprestart: updatemgr-prestart
+    servicehealthcmd: updatemgr-healthcmd
+    description: VMware Update Manager
+    id: 41
+    nameinlog: updatemgr
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./updatemgr/updatemgr.log
+    dp_service:
+      - lookupsvc
+      - sts
+      - vpxd
+      - vpxd-svcs
+    parent_id: 40
+  infraprofile:
+    servicename: infraprofile
+    serviceprestart: infraprofile-prestart
+    servicehealthcmd: infraprofile-healthcmd
+    description: VMware Infrastructure Profile Service
+    id: 42
+    nameinlog: infraprofile
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./infraprofile/infraprofile.log
+    dp_service:
+      - lookupsvc
+      - vpxd-svcs
+    parent_id: 41
+  hvc:
+    servicename: hvc
+    serviceprestart: hvc-prestart
+    servicehealthcmd: hvc-healthcmd
+    description: VMware Hybrid Versioning Control
+    id: 43
+    nameinlog: hvc
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./hvc/hvc.log
+    dp_service:
+      - certificatemanagement
+      - lookupsvc
+      - sts
+      - trustmanagement
+      - vapi-endpoint
+      - vmonapi
+      - vmware-vpostgres
+      - vpxd-svcs
+    parent_id: 42
+  vsphere-ui:
+    servicename: vsphere-ui
+    serviceprestart: vsphere-ui-prestart
+    servicehealthcmd: vsphere-ui-healthcmd
+    description: VMware vSphere Client
+    id: 44
+    nameinlog: vsphere-ui
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./vsphere-ui/vsphere-ui.log
+    dp_service:
+      - envoy
+      - lookupsvc
+      - rhttpproxy
+      - sts
+      - vapi-endpoint
+      - vpxd-svcs
+    parent_id: 43
+  content-library:
+    servicename: content-library
+    serviceprestart: content-library-prestart
+    servicehealthcmd: content-library-healthcmd
+    description: VMware Content Library Service
+    id: 45
+    nameinlog: content-library
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./content-library/content-library.log
+    dp_service:
+      - rhttpproxy
+      - sca
+      - vapi-endpoint
+      - vmware-vpostgres
+      - vpxd
+      - vpxd-svcs
+      - wcp
+    parent_id: 44
+  perfcharts:
+    servicename: perfcharts
+    serviceprestart: perfcharts-prestart
+    servicehealthcmd: perfcharts-healthcmd
+    description: VMware Performance Charts
+    id: 46
+    nameinlog: perfcharts
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - ALL
+      - HAActive
+    status: unknown
+    log:
+      - ./perfcharts/perfcharts.log
+    dp_service:
+      - sca
+      - vpxd
+      - vsphere-ui
+    parent_id: 45
+  imagebuilder:
+    servicename: imagebuilder
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: ''
+    id: 47
+    nameinlog: imagebuilder
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - HAActive
+    status: unknown
+    log:
+      - ''
+    dp_service: []
+    parent_id: null
+  netdumper:
+    servicename: netdumper
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: ''
+    id: 48
+    nameinlog: netdumper
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - HAActive
+    status: unknown
+    log:
+      - ''
+    dp_service: []
+    parent_id: null
+  rbd:
+    servicename: rbd
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: ''
+    id: 49
+    nameinlog: rbd
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - HAActive
+      - CRITICAL
+    status: unknown
+    log:
+      - ''
+    dp_service: []
+    parent_id: null
+  vcha:
+    servicename: vcha
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: ''
+    id: 50
+    nameinlog: vcha
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - HACore
+      - CRITICAL
+    status: unknown
+    log:
+      - ''
+    dp_service: []
+    parent_id: null
+  vmcam:
+    servicename: vmcam
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: ''
+    id: 51
+    nameinlog: vmcam
+    level: 2
+    type: vmon-control
+    profile:
+      - NONE
+      - HAActive
+    status: unknown
+    log:
+      - ''
+    dp_service: []
+    parent_id: null
+  vmonapi:
+    servicename: vmonapi
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: ''
+    id: 52
+    nameinlog: vmonapi
+    profile:
+      - NONE
+      - HAActive
+    level: 2
+    type: vmon-control
+    status: unknown
+    log:
+      - ''
+    dp_service: []
+    parent_id: null
+  observabobservability:
+    servicename: observabobservability
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: VMware VCSA Observability Service
+    id: 61
+    nameinlog: observabobservability
+    level: 3
+    type: system-control
+    profile: []
+    status: unknown
+    log:
+      - ./observability/observability.log
+    dp_service: []
+    parent_id: null
+  vmware-vdtc:
+    servicename: vmware-vdtc
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: VMware vSphere Distributed Tracing Collector
+    id: 62
+    nameinlog: vmware-vdtc
+    level: 3
+    type: system-control
+    profile: []
+    status: unknown
+    log:
+      - ./vdtc/vdtc.log
+    dp_service: []
+    parent_id: null
+  vmware-pod:
+    servicename: vmware-pod
+    serviceprestart: ''
+    servicehealthcmd: ''
+    description: VMware Patching and Host Management Service
+    id: 63
+    nameinlog: vmware-pod
+    level: 3
+    type: system-control
+    profile: []
+    status: unknown
+    log:
+      - ./pod/pod-service.log
+    dp_service: []
+    parent_id: null

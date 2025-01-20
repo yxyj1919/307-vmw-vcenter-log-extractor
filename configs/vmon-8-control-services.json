@@ -1,0 +1,149 @@
+{
+    "analytics": [
+        "analytics-prestart",
+        "analytics-healthcmd"
+    ],
+    "applmgmt": [
+        "applmgmt-prestart",
+        "applmgmt-healthcmd"
+    ],
+    "certificateauthority": [
+        "certificateauthority-prestart",
+        "certificateauthority-healthcmd"
+    ],
+    "certificatemanagement": [
+        "certificatemanagement-prestart",
+        "certificatemanagement-healthcmd"
+    ],
+    "cis-license": [
+        "cis-license-prestart",
+        "cis-license-healthcmd"
+    ],
+    "content-library": [
+        "content-library-prestart",
+        "content-library-healthcmd"
+    ],
+    "eam": [
+        "eam-prestart",
+        "eam-healthcmd"
+    ],
+    "envoy": [
+        "envoy-healthcmd"
+    ],
+    "envoy-hgw": [
+        "envoy-hgw-healthcmd"
+    ],
+    "envoy-sidecar": [
+        "envoy-sidecar-healthcmd"
+    ],
+    "event-pub": [],
+    "hvc": [
+        "hvc-prestart",
+        "hvc-healthcmd"
+    ],
+    "imagebuilder": [],
+    "infraprofile": [
+        "infraprofile-prestart",
+        "infraprofile-healthcmd"
+    ],
+    "lookupsvc": [
+        "lookupsvc-prestart",
+        "lookupsvc-healthcmd"
+    ],
+    "netdumper": [],
+    "observability-vapi": [
+        "observability-vapi-prestart",
+        "observability-vapi-healthcmd"
+    ],
+    "perfcharts": [
+        "perfcharts-prestart",
+        "perfcharts-healthcmd"
+    ],
+    "pschealth": [
+        "pschealth-healthcmd"
+    ],
+    "rbd": [],
+    "rhttpproxy": [
+        "rhttpproxy-prestart",
+        "rhttpproxy-healthcmd"
+    ],
+    "sca": [
+        "sca-prestart",
+        "sca-healthcmd"
+    ],
+    "sps": [
+        "sps-prestart",
+        "sps-healthcmd"
+    ],
+    "sts": [
+        "sts-prestart",
+        "sts-healthcmd"
+    ],
+    "topologysvc": [
+        "topologysvc-prestart",
+        "topologysvc-healthcmd"
+    ],
+    "trustmanagement": [
+        "trustmanagement-prestart",
+        "trustmanagement-healthcmd"
+    ],
+    "updatemgr": [
+        "updatemgr-prestart",
+        "updatemgr-healthcmd"
+    ],
+    "vapi-endpoint": [
+        "vapi-endpoint-prestart",
+        "vapi-endpoint-healthcmd"
+    ],
+    "vc-ws1a-broker": [
+        "vc-ws1a-broker-prestart",
+        "vc-ws1a-broker-healthcmd"
+    ],
+    "vcha": [],
+    "vlcm": [
+        "vlcm-prestart",
+        "vlcm-healthcmd"
+    ],
+    "vmcam": [],
+    "vmonapi": [],
+    "vmware-postgres-archiver": [
+        "vmware-postgres-archiver-prestart",
+        "vmware-postgres-archiver-healthcmd"
+    ],
+    "vmware-vpostgres": [
+        "vmware-vpostgres-prestart",
+        "vmware-vpostgres-healthcmd"
+    ],
+    "vpxd": [
+        "vpxd-prestart",
+        "vpxd-healthcmd"
+    ],
+    "vpxd-svcs": [
+        "vpxd-svcs-prestart",
+        "vpxd-svcs-healthcmd"
+    ],
+    "vsan-health": [
+        "vsan-health-prestart",
+        "vsan-health-healthcmd"
+    ],
+    "vsm": [
+        "vsm-prestart",
+        "vsm-healthcmd"
+    ],
+    "vsphere-ui": [
+        "vsphere-ui-prestart",
+        "vsphere-ui-healthcmd"
+    ],
+    "vstats": [
+        "vstats-prestart",
+        "vstats-healthcmd"
+    ],
+    "vtsdb": [
+        "vtsdb-prestart",
+        "vtsdb-healthcmd"
+    ],
+    "wcp": [
+        "wcp-prestart",
+        "wcp-healthcmd"
+    ]
+}

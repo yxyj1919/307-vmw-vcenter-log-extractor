@@ -1,0 +1,9 @@
+{
+    "ALL" : [ "analytics", "applmgmt", "certificateauthority", "certificatemanagement", "cis-license", "content-library", "eam", "envoy", "envoy-hgw", "envoy-sidecar", "event-pub", "hvc", "infraprofile", "lookupsvc", "observability-vapi", "perfcharts", "pschealth", "rhttpproxy", "sca", "sps", "sts", "topologysvc", "trustmanagement", "updatemgr", "vapi-endpoint", "vc-ws1a-broker",  "vlcm", "vmware-postgres-archiver", "vmware-vpostgres", "vpxd", "vpxd-svcs", "vsan-health", "vsm", "vsphere-ui", "vstats", "vtsdb", "wcp"
+ ],
+    "NONE" : [ "analytics", "applmgmt", "certificateauthority", "certificatemanagement", "cis-license", "content-library", "eam", "envoy", "envoy-hgw", "envoy-sidecar", "event-pub", "hvc", "imagebuilder", "infraprofile", "lookupsvc", "netdumper", "observability-vapi", "perfcharts", "pschealth", "rbd", "rhttpproxy", "sca", "sps", "sts", "topologysvc", "trustmanagement", "updatemgr", "vapi-endpoint", "vc-ws1a-broker", "vcha", "vlcm", "vmcam", "vmonapi", "vmware-postgres-archiver", "vmware-vpostgres", "vpxd", "vpxd-svcs", "vsan-health", "vsm", "vsphere-ui", "vstats", "vtsdb", "wcp"
+ ],
+    "HACore" : [ "vcha"],
+    "HAActive" : [ "rhttpproxy", "envoy", "envoy-hgw", "envoy-sidecar", "lookupsvc", "sts", "sca", "applmgmt", "cis-license", "content-library", "vpxd-svcs", "eam", "imagebuilder", "netdumper", "perfcharts", "rbd", "sps", "vapi-endpoint", "updatemgr", "vpxd", "vsan-health", "vsm", "vmonapi", "vmware-postgres-archiver", "vmcam", "pschealth", "vsphere-ui", "analytics", "hvc", "trustmanagement", "certificatemanagement", "certificateauthority", "vlcm", "infraprofile", "topologysvc", "vstats", "vtsdb", "wcp", "observability-vapi", "vc-ws1a-broker"],
+    "CRITICAL" : ["vcha", "vpxd", "rhttpproxy", "envoy", "envoy-hgw", "envoy-sidecar", "rbd", "vpxd-svcs", "sps", "vmware-postgres-archiver", "vmware-vpostgres", "vapi-endpoint", "pschealth", "lookupsvc", "wcp", "sts", "vc-ws1a-broker"]
+ }
