@@ -5,6 +5,9 @@ from vmon_log_processor import VMonLogProcessor
 from vmon_yaml_reader import YamlReader
 from vmon_log_analysis_service_prestart import analyze_service_prestarts
 from vmon_log_analysis_service_status import analyze_service_status
+import argparse
+import os
+import sys
 
 def print_combined_service_info(service_prestart, service_status, show_logs=True):
     """打印服务的综合信息，包括prestart和运行状态
@@ -56,6 +59,9 @@ def export_to_yaml(services_by_status, profile_name, output_dir='output'):
         profile_name: 配置文件名称
         output_dir: 输出目录，默认为'output'
     """
+    # 确保输出目录存在
+    os.makedirs(output_dir, exist_ok=True)
+    
     # 生成时间戳
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     
@@ -118,10 +124,13 @@ def export_to_yaml(services_by_status, profile_name, output_dir='output'):
     print(f"\nAnalysis results exported to: {output_file}")
     return output_file
 
-def analyze_vmon_logs():
-    """分析VMON日志中的服务prestart和运行状态"""
+def analyze_vmon_logs(log_file):
+    """分析VMON日志中的服务prestart和运行状态
+    
+    Args:
+        log_file: 要分析的日志文件路径
+    """
     # 1. 读取并处理日志文件
-    log_file = 'logs/vmon-803-24322028-unhealthy.log'
     processor = VMonLogProcessor()
     processed_df = processor.process_log_file(log_file)
     filtered_df = processor.filter_logs(processed_df)
@@ -186,5 +195,31 @@ def analyze_vmon_logs():
         'output_file': output_file
     }
 
-if __name__ == "__main__":
-    results = analyze_vmon_logs()
+def main():
+    parser = argparse.ArgumentParser(description='Analyze vmon log file')
+    parser.add_argument('--log-file', required=True, help='Path to the vmon log file')
+    args = parser.parse_args()
+    
+    # 使用传入的日志文件路径
+    log_file = args.log_file
+    print(f"Analyzing log file: {log_file}")
+    
+    try:
+        # 检查文件是否存在
+        if not os.path.exists(log_file):
+            print(f"Error: Log file not found: {log_file}")
+            sys.exit(1)
+            
+        # 分析日志文件
+        results = analyze_vmon_logs(log_file)
+        print(f"\nAnalysis completed successfully")
+        print(f"Output file: {results['output_file']}")
+        
+    except Exception as e:
+        print(f"Error analyzing log file: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+if __name__ == '__main__':
+    main()

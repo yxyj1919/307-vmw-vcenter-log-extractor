@@ -32,11 +32,17 @@ ENV/
 *.swo
 
 # Project specific
-logs/*
-!logs/.gitkeep
+uploads/*
+!uploads/.gitkeep
 output/*
 !output/.gitkeep
 
 # OS specific
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# 确保这些目录存在但内容不提交 
