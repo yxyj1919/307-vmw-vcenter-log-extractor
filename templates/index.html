@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>vCenter Service Status Matrix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .matrix {
+            display: table;
+            border-collapse: separate;
+            border-spacing: 6px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: fit-content;
+        }
+        
+        .row {
+            display: table-row;
+        }
+        
+        .cell {
+            display: table-cell;
+            width: 110px;
+            height: 80px;
+            border-radius: 6px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 12px;
+            padding: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease, opacity 0.3s ease;
+            word-wrap: break-word;
+            color: #333;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .cell:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .cell:hover::after {
+            content: attr(data-info);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.95);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-family: monospace;
+            white-space: pre;
+            z-index: 20;
+            min-width: 400px;
+            max-width: 600px;
+            line-height: 1.4;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .cell:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: rgba(0,0,0,0.9);
+            margin-bottom: -16px;
+            z-index: 20;
+        }
+        
+        .blue { 
+            background-color: #4a90e2;
+            color: white;
+        }
+        .green { 
+            background-color: #7ed321;
+            color: white;
+        }
+        .red { 
+            background-color: #d0021b;
+            color: white;
+        }
+        .yellow { 
+            background-color: #f8e71c;
+            color: #333;
+        }
+        .gray { 
+            background-color: #9b9b9b;
+            color: white;
+        }
+        .white { 
+            background-color: #ffffff;
+            border: 1px dashed #ccc;
+        }
+        
+        .legend {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .legend-item {
+            display: inline-block;
+            margin: 0 15px;
+            font-size: 14px;
+        }
+        
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+        }
+        
+        .service-id {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-bottom: 4px;
+            font-family: monospace;
+        }
+        
+        .service-name {
+            margin-bottom: 4px;
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+        
+        .service-deps {
+            font-size: 9px !important;
+            margin-top: 2px !important;
+            opacity: 0.8;
+        }
+        
+        .cell.highlight-dep {
+            outline: 3px solid #ff9800;
+            outline-offset: 1px;
+            z-index: 2;
+            transform: scale(1.02);
+            box-shadow: 0 0 12px rgba(255, 152, 0, 0.3);
+        }
+        
+        .cell.highlight-rdep {
+            outline: 3px solid #9c27b0;
+            outline-offset: 1px;
+            z-index: 3;
+            transform: scale(1.02);
+            box-shadow: 0 0 12px rgba(156, 39, 176, 0.3);
+        }
+        
+        .cell.selected {
+            outline: 3px solid #2196f3;
+            outline-offset: 1px;
+            z-index: 4;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.4);
+        }
+        
+        .cell.highlight-dep.highlight-rdep {
+            outline: 3px solid #673ab7;
+            z-index: 5;
+        }
+        
+        .legend-outline {
+            border: 2px solid;
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        
+        .outline-dep {
+            border-color: #ff9800;
+        }
+        
+        .outline-rdep {
+            border-color: #9c27b0;
+        }
+        
+        .outline-selected {
+            border-color: #2196f3;
+        }
+        
+        /* 虚化状态 */
+        .cell.dimmed {
+            opacity: 0.3;
+            filter: grayscale(30%);
+        }
+        
+        /* 确保高亮的单元格保持完全不透明 */
+        .cell.highlight-dep,
+        .cell.highlight-rdep,
+        .cell.selected,
+        .cell.highlight-dep.dimmed,
+        .cell.highlight-rdep.dimmed,
+        .cell.selected.dimmed {
+            opacity: 1;
+            filter: none;
+        }
+        
+        /* 调整悬停效果 */
+        .cell.dimmed:hover {
+            opacity: 0.8;  /* 悬停时稍微提高透明度 */
+        }
+        
+        /* 调整颜色类中的文字颜色 */
+        .blue .service-id,
+        .green .service-id,
+        .red .service-id,
+        .gray .service-id {
+            color: rgba(255, 255, 255, 0.8);  /* 浅色背景上的ID颜色 */
+        }
+        
+        .yellow .service-id {
+            color: rgba(0, 0, 0, 0.6);  /* 深色背景上的ID颜色 */
+        }
+        
+        /* 添加时间戳样式 */
+        .timestamp {
+            color: #8bc34a;
+            font-weight: bold;
+        }
+        
+        /* 添加日志级别样式 */
+        .log-level {
+            color: #ff9800;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        /* 添加标题样式 */
+        .section-title {
+            color: #2196f3;
+            font-weight: bold;
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="matrix">
+            {% for row in matrix %}
+            <div class="row">
+                {% for cell in row %}
+                <div class="cell {{ cell.color }}" 
+                     data-info="Service ID: {{ cell.id }}&#10;Type: {{ cell.type }}&#10;Status: {{ cell.status }}&#10;&#10;Log Configuration:{% if cell.config_logs %}&#10;{% for log in cell.config_logs %}  • {{ log }}&#10;{% endfor %}{% else %}  None{% endif %}&#10;&#10;Prestart Logs:{% if cell.prestart_logs %}&#10;{% for log in cell.prestart_logs %}  [{{ log.timestamp }}] {{ log.content }}&#10;{% endfor %}{% else %}  None{% endif %}&#10;&#10;Service Logs:{% if cell.service_logs %}&#10;{% for log in cell.service_logs %}  [{{ log.timestamp }}] {{ log.content }}&#10;{% endfor %}{% else %}  None{% endif %}"
+                     data-name="{{ cell.name }}"
+                     data-deps='{{ cell.dp_services|tojson|safe }}'
+                     data-rdeps='{{ cell.rdp_services|tojson|safe }}'>
+                    <div class="service-id">#{{ cell.id }}</div>
+                    <div class="service-name">{{ cell.name }}</div>
+                    {% if cell.dp_services %}
+                    <div class="service-deps">
+                        ({{ cell.dp_services|length }} deps)
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-color blue"></span>
+                System Control
+            </div>
+            <div class="legend-item">
+                <span class="legend-color green"></span>
+                Running
+            </div>
+            <div class="legend-item">
+                <span class="legend-color red"></span>
+                Failed to Start
+            </div>
+            <div class="legend-item">
+                <span class="legend-color yellow"></span>
+                Stopped
+            </div>
+            <div class="legend-item">
+                <span class="legend-color gray"></span>
+                Other
+            </div>
+            <div class="legend-item">
+                <span class="legend-outline outline-selected"></span>
+                Selected Service
+            </div>
+            <div class="legend-item">
+                <span class="legend-outline outline-dep"></span>
+                Dependencies
+            </div>
+            <div class="legend-item">
+                <span class="legend-outline outline-rdep"></span>
+                Dependent Services
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cells = document.querySelectorAll('.cell');
+            let selectedCell = null;
+            
+            function clearHighlights() {
+                cells.forEach(cell => {
+                    cell.classList.remove('highlight-dep', 'highlight-rdep', 'selected', 'dimmed');
+                });
+            }
+            
+            function highlightDependencies(cell) {
+                clearHighlights();
+                
+                if (selectedCell === cell) {
+                    selectedCell = null;
+                    return;
+                }
+                
+                selectedCell = cell;
+                
+                // 首先将所有单元格虚化
+                cells.forEach(cell => {
+                    if (cell.dataset.name) {
+                        cell.classList.add('dimmed');
+                    }
+                });
+                
+                // 获取依赖关系
+                const serviceName = cell.dataset.name;
+                let deps = [];
+                let rdeps = [];
+                
+                try {
+                    deps = JSON.parse(cell.dataset.deps || '[]');
+                    rdeps = JSON.parse(cell.dataset.rdeps || '[]');
+                } catch (e) {
+                    console.error('Error parsing dependencies:', e);
+                    return;
+                }
+                
+                // 高亮相关单元格并移除虚化效果
+                cell.classList.add('selected');
+                cell.classList.remove('dimmed');
+                
+                cells.forEach(otherCell => {
+                    if (!otherCell.dataset.name) return;
+                    
+                    const otherServiceName = otherCell.dataset.name;
+                    
+                    if (deps.includes(otherServiceName)) {
+                        otherCell.classList.add('highlight-dep');
+                        otherCell.classList.remove('dimmed');
+                    }
+                    if (rdeps.includes(otherServiceName)) {
+                        otherCell.classList.add('highlight-rdep');
+                        otherCell.classList.remove('dimmed');
+                    }
+                });
+            }
+            
+            // 为每个单元格添加点击事件
+            cells.forEach(cell => {
+                if (cell.dataset.name) {
+                    cell.addEventListener('click', function(event) {
+                        highlightDependencies(this);
+                        event.stopPropagation();
+                    });
+                }
+            });
+            
+            // 点击页面空白处取消高亮
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.cell')) {
+                    clearHighlights();
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
