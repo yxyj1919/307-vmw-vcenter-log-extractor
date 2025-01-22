@@ -24,6 +24,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
 ENV PYTHONUNBUFFERED=1
+ENV DOCKER_ENV=true
 
 # 暴露端口
 EXPOSE 5000

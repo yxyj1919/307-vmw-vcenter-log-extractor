@@ -233,6 +233,8 @@ def upload():
                 return 'No file part', 400
             
             file = request.files['file']
+            vcenter_version = request.form.get('vcenter_version', '8')  # 默认为 8.x
+            
             if file.filename == '':
                 return 'No selected file', 400
             
@@ -248,12 +250,18 @@ def upload():
                     file.save(filepath)
                     print(f"File saved to: {filepath}")
                     
-                    # 执行日志分析脚本，传入日志文件路径
+                    # 根据版本选择配置文件
+                    config_file = 'vcsa8u3-all-services.yaml' if vcenter_version == '8' else 'vcsa7-all-services.yaml'
+                    config_path = os.path.join(BASE_DIR, 'configs', config_file)
+                    
+                    # 执行分析脚本时传入版本信息
                     script_path = os.path.join(BASE_DIR, 'utils', 'vmon_log_analysis_service_combined.py')
-                    result = subprocess.run(['python', script_path, '--log-file', filepath], 
-                                         capture_output=True,
-                                         text=True,
-                                         check=True)
+                    result = subprocess.run(
+                        ['python', script_path, '--log-file', filepath, '--vcenter-version', vcenter_version],
+                        capture_output=True,
+                        text=True,
+                        check=True
+                    )
                     print("Analysis output:", result.stdout)
                     
                     # 检查是否生成了分析文件
@@ -511,9 +519,8 @@ def upload_url():
             return 'No URL provided', 400
             
         url = data['file_url']
-        if not url.lower().endswith('.log'):
-            return 'Invalid file type', 400
-            
+        vcenter_version = data.get('vcenter_version', '8')  # 默认为 8.x
+        
         # 下载文件
         response = requests.get(url, stream=True)
         if not response.ok:
@@ -530,13 +537,19 @@ def upload_url():
                 if chunk:
                     f.write(chunk)
                     
-        # 执行分析
+        # 根据版本选择配置文件
+        config_file = 'vcsa8u3-all-services.yaml' if vcenter_version == '8' else 'vcsa7-all-services.yaml'
+        config_path = os.path.join(BASE_DIR, 'configs', config_file)
+        
+        # 执行分析脚本时传入版本信息
         script_path = os.path.join(BASE_DIR, 'utils', 'vmon_log_analysis_service_combined.py')
-        result = subprocess.run(['python', script_path, '--log-file', filepath],
-                              capture_output=True,
-                              text=True,
-                              check=True)
-                              
+        result = subprocess.run(
+            ['python', script_path, '--log-file', filepath, '--vcenter-version', vcenter_version],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        
         return jsonify({'success': True})
         
     except requests.exceptions.RequestException as e:
@@ -546,5 +559,12 @@ def upload_url():
         return f'Error processing file: {str(e)}', 500
 
 if __name__ == '__main__':
-    # 确保在容器中监听所有接口
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    # 本地开发时监听 127.0.0.1
+    host = '127.0.0.1'
+    port = 5000
+    
+    # 如果在容器环境中运行，则监听所有接口
+    if os.environ.get('DOCKER_ENV') == 'true':
+        host = '0.0.0.0'
+    
+    app.run(host=host, port=port, debug=False)
