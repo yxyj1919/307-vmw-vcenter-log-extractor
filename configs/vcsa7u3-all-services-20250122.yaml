@@ -1,0 +1,3 @@
+# vCenter Server 7.x Services Configuration
+services:
+  # ... vCenter 7.x 的服务配置 ... 

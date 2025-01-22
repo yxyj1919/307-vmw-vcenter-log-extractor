@@ -124,94 +124,112 @@ def export_to_yaml(services_by_status, profile_name, output_dir='output'):
     print(f"\nAnalysis results exported to: {output_file}")
     return output_file
 
-def analyze_vmon_logs(log_file):
-    """分析VMON日志中的服务prestart和运行状态
+def analyze_vmon_logs(log_file, config_path):
+    """分析vmon日志文件
     
     Args:
-        log_file: 要分析的日志文件路径
+        log_file: vmon日志文件路径
+        config_path: 服务配置文件路径
     """
-    # 1. 读取并处理日志文件
-    processor = VMonLogProcessor()
-    processed_df = processor.process_log_file(log_file)
-    filtered_df = processor.filter_logs(processed_df)
-    print(f"Total log entries: {len(filtered_df)}")
-    
-    # 2. 获取配置文件名称
-    profile_logs = filtered_df[filtered_df['Log'].str.contains('Starting vMon with profile', na=False)]
-    if not profile_logs.empty:
-        profile_name = profile_logs.iloc[-1]['Log'].split("'")[-2]
-        print(f"\nCurrent profile: {profile_name}")
-    else:
-        profile_name = 'NONE'
-        print("\nProfile information not found")
-    
-    # 3. 获取配置文件关联的服务
-    yaml_reader = YamlReader('configs/vcsa8u3-all-services-20250120.yaml')
-    profile_services = yaml_reader.get_services_by_profile(profile_name)
-    print(f"\nServices in profile '{profile_name}' (Total: {len(profile_services)})")
-    
-    # 4. 分析服务的prestart和运行状态
-    service_prestarts = analyze_service_prestarts(yaml_reader, profile_services, filtered_df)
-    service_status = analyze_service_status(yaml_reader, profile_services, filtered_df)
-    
-    # 创建查找字典，方便访问
-    prestart_dict = {s['service']: s for s in service_prestarts}
-    status_dict = {s['service']: s for s in service_status}
-    
-    # 5. 按组合状态对服务分组
-    services_by_status = []
-    for service in profile_services:
-        prestart_info = prestart_dict[service]
-        status_info = status_dict[service]
+    try:
+        # 1. 读取并处理日志文件
+        processor = VMonLogProcessor()
+        processed_df = processor.process_log_file(log_file)
+        filtered_df = processor.filter_logs(processed_df)
+        print(f"Total log entries: {len(filtered_df)}")
         
-        services_by_status.append({
-            'service': service,
-            'prestart': prestart_info,
-            'status': status_info,
-            'combined_status': f"{prestart_info['prestart_status']}/{status_info['start_status']}"
-        })
-    
-    # 按级别和状态排序
-    services_by_status.sort(key=lambda x: (x['status']['level'], x['combined_status']))
-    
-    # 显示服务状态摘要
-    print("\nService Status Summary:")
-    for service_info in services_by_status:
-        print_combined_service_info(
-            service_info['prestart'],
-            service_info['status'],
-            show_logs=True
-        )
-    
-    # 导出结果到YAML文件
-    output_file = export_to_yaml(services_by_status, profile_name)
-    
-    return {
-        'filtered_df': filtered_df,
-        'profile_name': profile_name,
-        'profile_services': profile_services,
-        'service_prestarts': service_prestarts,
-        'service_status': service_status,
-        'output_file': output_file
-    }
+        # 2. 获取配置文件名称
+        profile_logs = filtered_df[filtered_df['Log'].str.contains('Starting vMon with profile', na=False)]
+        if not profile_logs.empty:
+            profile_name = profile_logs.iloc[-1]['Log'].split("'")[-2]
+            print(f"\nCurrent profile: {profile_name}")
+        else:
+            profile_name = 'NONE'
+            print("\nProfile information not found")
+        
+        # 3. 获取配置文件关联的服务
+        yaml_reader = YamlReader(config_path)
+        profile_services = yaml_reader.get_services_by_profile(profile_name)
+        print(f"\nServices in profile '{profile_name}' (Total: {len(profile_services)})")
+        
+        # 4. 分析服务的prestart和运行状态
+        service_prestarts = analyze_service_prestarts(yaml_reader, profile_services, filtered_df)
+        service_status = analyze_service_status(yaml_reader, profile_services, filtered_df)
+        
+        # 创建查找字典，方便访问
+        prestart_dict = {s['service']: s for s in service_prestarts}
+        status_dict = {s['service']: s for s in service_status}
+        
+        # 5. 按组合状态对服务分组
+        services_by_status = []
+        for service in profile_services:
+            prestart_info = prestart_dict[service]
+            status_info = status_dict[service]
+            
+            services_by_status.append({
+                'service': service,
+                'prestart': prestart_info,
+                'status': status_info,
+                'combined_status': f"{prestart_info['prestart_status']}/{status_info['start_status']}"
+            })
+        
+        # 按级别和状态排序
+        services_by_status.sort(key=lambda x: (x['status']['level'], x['combined_status']))
+        
+        # 显示服务状态摘要
+        print("\nService Status Summary:")
+        for service_info in services_by_status:
+            print_combined_service_info(
+                service_info['prestart'],
+                service_info['status'],
+                show_logs=True
+            )
+        
+        # 导出结果到YAML文件
+        output_file = export_to_yaml(services_by_status, profile_name)
+        
+        return {
+            'filtered_df': filtered_df,
+            'profile_name': profile_name,
+            'profile_services': profile_services,
+            'service_prestarts': service_prestarts,
+            'service_status': service_status,
+            'output_file': output_file
+        }
+    except Exception as e:
+        print(f"Error analyzing log file: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(2)
 
 def main():
     parser = argparse.ArgumentParser(description='Analyze vmon log file')
     parser.add_argument('--log-file', required=True, help='Path to the vmon log file')
+    parser.add_argument('--vcenter-version', choices=['7', '8'], default='8', 
+                      help='vCenter version (7 or 8)')
     args = parser.parse_args()
-    
-    # 使用传入的日志文件路径
-    log_file = args.log_file
-    print(f"Analyzing log file: {log_file}")
     
     try:
         # 检查文件是否存在
-        if not os.path.exists(log_file):
-            print(f"Error: Log file not found: {log_file}")
+        if not os.path.exists(args.log_file):
+            print(f"Error: Log file not found: {args.log_file}")
+            sys.exit(1)
+        
+        # 根据版本选择配置文件
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if args.vcenter_version == '8':
+            config_file = 'vcsa8u3-all-services.yaml'
+        else:
+            config_file = 'vcsa7-all-services.yaml'
+            
+        config_path = os.path.join(base_dir, 'configs', config_file)
+        
+        if not os.path.exists(config_path):
+            print(f"Error: Config file not found: {config_path}")
             sys.exit(1)
             
         # 分析日志文件
-        results = analyze_vmon_logs(log_file)
+        results = analyze_vmon_logs(args.log_file, config_path)
         print(f"\nAnalysis completed successfully")
         print(f"Output file: {results['output_file']}")
         
@@ -219,7 +237,7 @@ def main():
         print(f"Error analyzing log file: {str(e)}")
         import traceback
         traceback.print_exc()
-        sys.exit(1)
+        sys.exit(2)
 
 if __name__ == '__main__':
     main()
