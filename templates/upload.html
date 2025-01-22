@@ -34,6 +34,31 @@
             letter-spacing: 0.3px;
         }
         
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .version-tag {
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .bug-report {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .bug-report:hover {
+            color: white;
+        }
+        
         .main-content {
             flex: 1;
             display: flex;
@@ -296,6 +321,10 @@
 <body>
     <div class="navbar">
         <a href="/" class="navbar-brand">vCenter vMon Service Checker</a>
+        <div class="navbar-right">
+            <span class="version-tag">v0.1.0</span>
+            <span class="bug-report">Bug Report: <a href="mailto:chang.wang@broadcom.com" style="color: inherit;">chang.wang@broadcom.com</a></span>
+        </div>
     </div>
     
     <div class="main-content">
