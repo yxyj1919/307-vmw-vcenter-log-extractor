@@ -3,6 +3,7 @@
 <head>
     <title>vCenter vMon Service Checker</title>
     <style>
+        /* 基础布局样式 */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -261,86 +262,90 @@
         /* 导航栏样式 */
         .navbar {
             background-color: #2c3e50;
-            padding: 8px 20px;
+            padding: 8px 16px;
             color: white;
-            font-size: 14px;
+            font-size: 12px;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-sizing: border-box;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            align-items: center;
         }
         
         .navbar-left {
             display: flex;
             align-items: center;
-            gap: 20px;
-        }
-        
-        .navbar-back {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            opacity: 0.8;
-            transition: opacity 0.2s;
-        }
-        
-        .navbar-back:hover {
-            opacity: 1;
-        }
-        
-        .back-arrow {
-            font-size: 18px;
-            line-height: 1;
+            gap: 12px;
         }
         
         .navbar-brand {
-            font-weight: 500;
+            font-weight: 600;
             color: white;
             text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 0.3px;
         }
         
-        .navbar-info {
+        .version-divider {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+        }
+        
+        /* vCenter 版本的样式（保留背景色） */
+        .vcenter-version {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.1);  /* 只有版本信息保留背景色 */
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        /* 服务统计信息的样式 */
+        .service-stats {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
+            font-size: 11px;
         }
         
-        .navbar-item {
+        .stat-item {
             display: flex;
             align-items: center;
-            gap: 5px;
-            opacity: 0.9;
+            gap: 4px;
         }
         
-        .navbar-item .count {
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .stat-value {
             font-weight: 600;
-            color: #fff;
+            color: rgba(255, 255, 255, 0.9);
         }
         
-        .navbar-item .label {
-            opacity: 0.8;
+        /* 使用新的 class 名称 */
+        .stat-value.status-running,
+        .stat-value.status-failed,
+        .stat-value.status-stopped {
+            color: rgba(255, 255, 255, 0.9);
         }
         
-        .navbar-divider {
-            width: 1px;
-            height: 20px;
-            background-color: rgba(255, 255, 255, 0.2);
-            margin: 0 5px;
+        .stat-divider {
+            color: rgba(255, 255, 255, 0.2);
+            margin: 0 4px;
         }
         
         .navbar-right {
             display: flex;
             align-items: center;
-            gap: 24px;
-            font-size: 13px;
+            gap: 16px;
+            font-size: 11px;
             color: rgba(255, 255, 255, 0.8);
         }
         
         .version-tag {
-            padding: 4px 8px;
+            padding: 2px 6px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
             font-family: monospace;
@@ -355,51 +360,74 @@
         .bug-report:hover {
             color: white;
         }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 11px;
+            transition: color 0.2s ease;
+        }
+        
+        .back-button:hover {
+            color: white;
+        }
+        
+        .back-arrow {
+            font-size: 14px;
+            line-height: 1;
+        }
+        
+        .back-text {
+            font-weight: 500;
+        }
+        
+        /* 响应式设计调整 */
+        @media (max-width: 768px) {
+            /* 移动设备适配 */
+        }
     </style>
 </head>
 <body>
     <div class="navbar">
         <div class="navbar-left">
-            <a href="/upload" class="navbar-back">
-                <span class="back-arrow">←</span> Back
+            <a href="/upload" class="back-button">
+                <span class="back-arrow">←</span>
+                <span class="back-text">Back</span>
             </a>
+            <span class="version-divider">|</span>
             <a href="/" class="navbar-brand">vCenter vMon Service Checker</a>
-        </div>
-        <div class="navbar-info">
-            <div class="navbar-item">
-                <span class="label">Profile:</span>
-                <span class="count">{{ stats.profile }}</span>
-            </div>
-            <div class="navbar-divider"></div>
-            <div class="navbar-item">
-                <span class="label">System Control:</span>
-                <span class="count">{{ stats.system_control }}</span>
-            </div>
-            <div class="navbar-item">
-                <span class="label">VMon Control:</span>
-                <span class="count">{{ stats.vmon_control }}</span>
-            </div>
-            <div class="navbar-divider"></div>
-            <div class="navbar-item">
-                <span class="label">Running:</span>
-                <span class="count">{{ stats.running }}</span>
-            </div>
-            <div class="navbar-item">
-                <span class="label">Failed:</span>
-                <span class="count">{{ stats.failed }}</span>
-            </div>
-            <div class="navbar-item">
-                <span class="label">Stopped:</span>
-                <span class="count">{{ stats.stopped }}</span>
-            </div>
-            <div class="navbar-divider"></div>
-            <div class="navbar-item">
-                <span class="label">Updated:</span>
-                <span class="count">{{ last_updated }}</span>
+            <span class="version-divider">|</span>
+            <span class="vcenter-version">vCenter {{ vcenter_version }}.x</span>
+            <span class="version-divider">|</span>
+            <div class="service-stats">
+                <span class="stat-item">
+                    <span class="stat-label">Sys:</span>
+                    <span class="stat-value">{{ stats.system_control }}</span>
+                </span>
+                <span class="stat-item">
+                    <span class="stat-label">VMon:</span>
+                    <span class="stat-value">{{ stats.vmon_control }}</span>
+                </span>
+                <span class="stat-divider">|</span>
+                <span class="stat-item">
+                    <span class="stat-label">Run:</span>
+                    <span class="stat-value status-running">{{ stats.running }}</span>
+                </span>
+                <span class="stat-item">
+                    <span class="stat-label">Fail:</span>
+                    <span class="stat-value status-failed">{{ stats.failed }}</span>
+                </span>
+                <span class="stat-item">
+                    <span class="stat-label">Stop:</span>
+                    <span class="stat-value status-stopped">{{ stats.stopped }}</span>
+                </span>
             </div>
         </div>
         <div class="navbar-right">
-            <span class="version-tag">v0.1.0</span>
+            <span class="version-tag">v1.0.0</span>
             <span class="bug-report">Bug Report: <a href="mailto:chang.wang@broadcom.com" style="color: inherit;">chang.wang@broadcom.com</a></span>
         </div>
     </div>

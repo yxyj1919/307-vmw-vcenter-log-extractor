@@ -4,6 +4,18 @@ from datetime import datetime
 import os
 
 class VMonLogProcessor:
+    """vMon 日志处理器
+    
+    功能：
+    - 解析 vmon.log 文件
+    - 提取日志条目的各个字段
+    - 生成结构化的日志数据
+    - 保存处理结果到 CSV 文件
+    
+    日志格式：
+    时间戳 级别(数字) 主机ID <服务名> 日志内容
+    """
+
     def __init__(self):
         # 定义日志格式的正则表达式
         self.log_pattern = r'^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)\s+([A-Za-z]+\(\d+\))\s+(host-\d+)\s+<([^>]+)>\s+(.+)$'
@@ -15,7 +27,20 @@ class VMonLogProcessor:
         self.service_pattern = r'<([^>]+)>'
     
     def process_log_line(self, line):
-        """处理单行日志"""
+        """处理单行日志
+        
+        Args:
+            line (str): 原始日志行
+            
+        Returns:
+            dict: 包含以下字段的字典：
+                - Time: 时间戳
+                - Level: 日志级别
+                - Host: 主机 ID
+                - Service: 服务名称
+                - Log: 日志内容
+                - CompleteLog: 完整日志行
+        """
         match = re.match(self.log_pattern, line.strip())
         
         if match:
@@ -116,15 +141,19 @@ class VMonLogProcessor:
             return pd.DataFrame(columns=['Time', 'Level', 'Host', 'Service', 'Log', 'CompleteLog'])
 
     def filter_logs(self, df, output_suffix='filtered'):
-        """
-        过滤掉包含特定关键词的日志，并保存为新的CSV文件
+        """过滤日志数据
         
-        参数:
-            df: 原始DataFrame
-            output_suffix: 输出文件的后缀名，默认为'filtered'
-        
-        返回:
-            过滤后的DataFrame
+        Args:
+            df (DataFrame): 原始日志数据
+            output_suffix (str): 输出文件后缀
+            
+        功能：
+            - 移除不必要的日志条目
+            - 保存过滤后的结果
+            - 生成过滤统计信息
+            
+        Returns:
+            DataFrame: 过滤后的日志数据
         """
         try:
             # 创建DataFrame的副本以避免修改原始数据

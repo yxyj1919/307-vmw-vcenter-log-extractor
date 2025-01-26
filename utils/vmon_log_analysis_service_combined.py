@@ -9,6 +9,19 @@ import argparse
 import os
 import sys
 
+"""
+vCenter vMon 日志分析工具
+
+功能：
+- 分析 vmon.log 文件中的服务状态
+- 处理不同版本 vCenter (7.x 和 8.x) 的日志
+- 生成服务状态和依赖关系报告
+- 输出分析结果到 YAML 文件
+
+使用方法：
+python3 vmon_log_analysis_service_combined.py --log-file <log_file> --vcenter-version <7|8>
+"""
+
 def print_combined_service_info(service_prestart, service_status, show_logs=True):
     """打印服务的综合信息，包括prestart和运行状态
     
@@ -125,11 +138,17 @@ def export_to_yaml(services_by_status, profile_name, output_dir='output'):
     return output_file
 
 def analyze_vmon_logs(log_file, config_path):
-    """分析vmon日志文件
+    """分析 vmon 日志文件并生成报告
     
     Args:
-        log_file: vmon日志文件路径
-        config_path: 服务配置文件路径
+        log_file (str): vmon.log 文件路径
+        config_path (str): 服务配置文件路径
+        
+    Returns:
+        dict: 包含以下信息的分析结果：
+            - output_file: 输出文件路径
+            - services: 服务状态信息
+            - profile: vCenter 配置文件
     """
     try:
         # 1. 读取并处理日志文件
@@ -202,7 +221,51 @@ def analyze_vmon_logs(log_file, config_path):
         traceback.print_exc()
         sys.exit(2)
 
+def parse_service_logs(log_entries, service_name):
+    """解析特定服务的日志条目
+    
+    Args:
+        log_entries (list): 服务相关的日志条目
+        service_name (str): 服务名称
+        
+    Returns:
+        dict: 包含以下信息：
+            - service_status: 服务状态
+            - prestart_logs: 启动前日志
+            - service_logs: 服务运行日志
+    """
+    # Implementation of parse_service_logs function
+    pass
+
+def determine_service_status(logs):
+    """根据日志确定服务状态
+    
+    Args:
+        logs (list): 服务日志条目
+        
+    Returns:
+        str: 服务状态
+            - 'running': 服务正在运行
+            - 'failed to start': 服务启动失败
+            - 'stopped': 服务已停止
+    """
+    # Implementation of determine_service_status function
+    pass
+
 def main():
+    """主函数
+    
+    功能：
+    - 解析命令行参数
+    - 验证输入文件
+    - 选择正确的配置文件
+    - 执行日志分析
+    - 处理错误情况
+    
+    命令行参数：
+    --log-file: vmon.log 文件路径
+    --vcenter-version: vCenter 版本 (7 或 8)
+    """
     parser = argparse.ArgumentParser(description='Analyze vmon log file')
     parser.add_argument('--log-file', required=True, help='Path to the vmon log file')
     parser.add_argument('--vcenter-version', choices=['7', '8'], default='8', 
@@ -217,11 +280,7 @@ def main():
         
         # 根据版本选择配置文件
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        if args.vcenter_version == '8':
-            config_file = 'vcsa8u3-all-services.yaml'
-        else:
-            config_file = 'vcsa7-all-services.yaml'
-            
+        config_file = 'vcsa8u3-all-services.yaml' if args.vcenter_version == '8' else 'vcsa7u3-all-services.yaml'
         config_path = os.path.join(base_dir, 'configs', config_file)
         
         if not os.path.exists(config_path):

@@ -322,7 +322,7 @@
     <div class="navbar">
         <a href="/" class="navbar-brand">vCenter vMon Service Checker</a>
         <div class="navbar-right">
-            <span class="version-tag">v0.1.0</span>
+            <span class="version-tag">v1.0.0</span>
             <span class="bug-report">Bug Report: <a href="mailto:chang.wang@broadcom.com" style="color: inherit;">chang.wang@broadcom.com</a></span>
         </div>
     </div>
@@ -331,7 +331,7 @@
         <div class="upload-container">
             <h1 class="upload-title">Upload File (vmon.log)</h1>
             
-            <!-- 添加版本选择器 -->
+            <!-- 版本选择器 -->
             <div class="version-selector">
                 <h3>Select vCenter Version</h3>
                 <div class="version-options">
@@ -346,23 +346,28 @@
                 </div>
             </div>
             
-            <!-- 原有的上传选项 -->
+            <!-- 上传选项 -->
             <div class="upload-options">
                 <button type="button" class="option-button active" data-section="file">Upload File</button>
                 <button type="button" class="option-button" data-section="url">From URL</button>
             </div>
             
-            <!-- 修改文件上传表单，添加版本信息 -->
+            <!-- 文件上传表单 -->
             <div class="upload-section active" id="fileSection">
                 <form class="upload-form" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="vcenter_version" id="vcenterVersion" value="8">
+                    <!-- 隐藏的版本输入 -->
+                    <input type="hidden" name="vcenter_version" id="fileVcenterVersion" required>
+                    
+                    <!-- 文件上传区域 -->
                     <div class="file-drop-zone" id="dropZone">
                         <div class="upload-icon">📤</div>
                         <div class="drop-zone-text">Drag and drop your file here</div>
                         <div class="drop-zone-subtext">or click to browse</div>
-                        <input type="file" name="file" class="file-input" id="fileInput" accept=".log">
+                        <input type="file" name="file" class="file-input" id="fileInput" accept=".log" required>
                     </div>
                     <div class="selected-file" id="selectedFile"></div>
+                    
+                    <!-- 提交按钮 -->
                     <button type="submit" class="submit-button">
                         <span>Analyze</span>
                         <span>→</span>
@@ -370,10 +375,13 @@
                 </form>
             </div>
             
-            <!-- 修改URL上传表单，添加版本信息 -->
+            <!-- URL 上传表单 -->
             <div class="upload-section" id="urlSection">
                 <form class="upload-form" method="post" action="/upload_url">
-                    <input type="hidden" name="vcenter_version" id="urlVcenterVersion" value="8">
+                    <!-- 隐藏的版本输入 -->
+                    <input type="hidden" name="vcenter_version" id="urlVcenterVersion" required>
+                    
+                    <!-- URL 输入 -->
                     <div class="url-input-container">
                         <input type="url" 
                                name="file_url" 
@@ -382,6 +390,8 @@
                                required>
                         <div class="error-message" id="urlError"></div>
                     </div>
+                    
+                    <!-- 提交按钮 -->
                     <button type="submit" class="submit-button">
                         <span>Download & Analyze</span>
                         <span>→</span>
@@ -506,12 +516,14 @@
             urlError.textContent = message;
             urlError.classList.add('visible');
         }
-        
+
         // 处理版本选择
         const versionOptions = document.querySelectorAll('.version-option');
         const vcenterVersionInputs = document.querySelectorAll('input[name="vcenter_version"]');
+        let selectedVersion = '';  // 初始化为空字符串
         
         function updateVersion(version) {
+            selectedVersion = version;
             // 更新选中状态
             versionOptions.forEach(option => {
                 option.classList.toggle('selected', option.dataset.version === version);
@@ -523,13 +535,20 @@
             });
         }
         
-        // 初始化选择 vCenter 8.x
-        updateVersion('8');
-        
         // 添加点击事件处理
         versionOptions.forEach(option => {
             option.addEventListener('click', () => {
                 updateVersion(option.dataset.version);
+            });
+        });
+        
+        // 表单提交验证
+        document.querySelectorAll('.upload-form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                if (!selectedVersion) {
+                    e.preventDefault();
+                    alert('Please select a vCenter version');
+                }
             });
         });
     </script>

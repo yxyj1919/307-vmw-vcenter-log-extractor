@@ -1,3 +1,4 @@
+# 20250126 VCSA7U3 All Services
 services:
   lwsmd:
     servicename: lwsmd
@@ -130,9 +131,8 @@ services:
     status: unknown
     log:
       - ./rhttpproxy/rhttpproxy.log
-    dp_service:
-      - vmafdd
-    parent_id: 13
+    dp_service: []
+    parent_id: 12
   eam:
     servicename: eam
     serviceprestart: eam-prestart
@@ -150,7 +150,7 @@ services:
     log:
       - ./eam/eam.log
     dp_service: []
-    parent_id: 17
+    parent_id: 13
   applmgmt:
     servicename: applmgmt
     serviceprestart: applmgmt-prestart
@@ -168,10 +168,8 @@ services:
     log:
       - ./applmgmt/applmgmt.log
     dp_service:
-      - lookupsvc
       - statsmonitor
-      - vpxd-svcs
-    parent_id: 39	
+    parent_id: 14
   vmware-vpostgres:
     servicename: vmware-vpostgres
     serviceprestart: vmware-vpostgres-prestart
@@ -189,7 +187,7 @@ services:
     log:
       - ./vpostgres/postgresql.log
     dp_service: []
-    parent_id: 14
+    parent_id: 15
   vtsdb:
     servicename: vtsdb
     serviceprestart: vtsdb-prestart
@@ -206,9 +204,8 @@ services:
     status: unknown
     log:
       - ./vtsdb/vtsdb.log
-    dp_service:
-      - vmware-vpostgres
-    parent_id: 15	
+    dp_service: []
+    parent_id: 16    
   lookupsvc:
     servicename: lookupsvc
     serviceprestart: lookupsvc-prestart
@@ -228,7 +225,7 @@ services:
     dp_service:
       - rhttpproxy
       - vmware-vpostgres
-    parent_id: 18	
+    parent_id: 17    
   vmware-postgres-archiver:
     servicename: vmware-postgres-archiver
     serviceprestart: vmware-postgres-archiver-prestart
@@ -248,7 +245,7 @@ services:
       - ./vpostgres/archiver.log
     dp_service:
       - vmware-vpostgres
-    parent_id: 16	
+    parent_id: 18    
   trustmanagement:
     servicename: trustmanagement
     serviceprestart: trustmanagement-prestart
@@ -268,7 +265,7 @@ services:
       - ./trustmanagement/trustmanagement.log
     dp_service:
       - lookupsvc
-    parent_id: 19	
+    parent_id: 19    
   vapi-endpoint:
     servicename: vapi-endpoint
     serviceprestart: vapi-endpoint-prestart
@@ -289,7 +286,7 @@ services:
     dp_service:
       - envoy
       - lookupsvc
-    parent_id: 27
+    parent_id: 20
   sca:
     servicename: sca
     serviceprestart: sca-prestart
@@ -309,8 +306,7 @@ services:
     dp_service:
       - lookupsvc
       - rhttpproxy
-      - sts
-    parent_id: 23
+    parent_id: 21
   sts:
     servicename: sts
     serviceprestart: sts-prestart
@@ -328,9 +324,8 @@ services:
     status: unknown
     log:
       - ./sts/sts.log
-    dp_service:
-      - lookupsvc
-    parent_id: 21			
+    dp_service: []
+    parent_id: 22            
   cis-license:
     servicename: cis-license
     serviceprestart: cis-license-prestart
@@ -351,7 +346,7 @@ services:
       - envoy
       - lookupsvc
       - sts
-    parent_id: 26				
+    parent_id: 23                
   vmonapi:
     servicename: vmonapi
     serviceprestart: 
@@ -370,7 +365,7 @@ services:
       - 
     dp_service:
       - lookupsvc
-    parent_id: 26
+    parent_id: 24
   vpxd-svcs:
     servicename: vpxd-svcs
     serviceprestart: vpxd-svcs-prestart
@@ -388,11 +383,8 @@ services:
     status: unknown
     log:
       - ./vpxd/svcs.log
-    dp_service:
-      - lookupsvc
-      - sts
-      - vmware-vpostgres
-    parent_id: 30
+    dp_service: []
+    parent_id: 25
   infraprofile:
     servicename: infraprofile
     serviceprestart: infraprofile-prestart
@@ -408,12 +400,11 @@ services:
       - HAActive
     status: unknown
     log:
-      - ./infraprofile/infraprofile.log
+      - ./infraprofile/infraprofile-svc.log
     dp_service:
       - lookupsvc
       - vpxd-svcs
-    parent_id: 41
-
+    parent_id: 26
   certificatemanagement:
     servicename: certificatemanagement
     serviceprestart: certificatemanagement-prestart
@@ -429,12 +420,11 @@ services:
       - HAActive
     status: unknown
     log:
-      - ./certmgmt/certmgmt.log
+      - ./certmgmt/certificatemanagement-svcs.log
     dp_service:
       - lookupsvc
-      - sts
       - vpxd-svcs
-    parent_id: 36
+    parent_id: 27
   hvc:
     servicename: hvc
     serviceprestart: hvc-prestart
@@ -450,17 +440,9 @@ services:
       - HAActive
     status: unknown
     log:
-      - ./hvc/hvc.log
-    dp_service:
-      - certificatemanagement
-      - lookupsvc
-      - sts
-      - trustmanagement
-      - vapi-endpoint
-      - vmonapi
-      - vmware-vpostgres
-      - vpxd-svcs
-    parent_id: 42
+      - ./hvc/hvc-svc.log
+    dp_service: []
+    parent_id: 28
   observability-vapi:
     servicename: observability-vapi
     serviceprestart: observability-vapi-prestart
@@ -480,7 +462,7 @@ services:
     dp_service:
       - lookupsvc
       - vpxd-svcs
-    parent_id: 35
+    parent_id: 29
   certificateauthority:
     servicename: certificateauthority
     serviceprestart: certificateauthority-prestart
@@ -499,9 +481,8 @@ services:
       - ./ca/ca.log
     dp_service:
       - lookupsvc
-      - sts
       - vpxd-svcs
-    parent_id: 34
+    parent_id: 30
   topologysvc:
     servicename: topologysvc
     serviceprestart: topologysvc-prestart
@@ -520,9 +501,8 @@ services:
       - ./topology/topology.log
     dp_service:
       - lookupsvc
-      - sts
       - vpxd-svcs
-    parent_id: 37	
+    parent_id: 31    
   vsphere-ui:
     servicename: vsphere-ui
     serviceprestart: vsphere-ui-prestart
@@ -540,13 +520,8 @@ services:
     log:
       - ./vsphere-ui/vsphere-ui.log
     dp_service:
-      - envoy
-      - lookupsvc
       - rhttpproxy
-      - sts
-      - vapi-endpoint
-      - vpxd-svcs
-    parent_id: 43
+    parent_id: 32
   vpxd:
     servicename: vpxd
     serviceprestart: vpxd-prestart
@@ -566,9 +541,9 @@ services:
       - ./vpxd/vpxd.log
     dp_service:
       - lookupsvc
-      - sts
+      - vpxd-svcs
       - vmware-vpostgres
-    parent_id: 22
+    parent_id: 33
   vlcm:
     servicename: vlcm
     serviceprestart: vlcm-prestart
@@ -589,7 +564,7 @@ services:
       - lookupsvc
       - vmware-vpostgres
       - vpxd
-    parent_id: 24	
+    parent_id: 34    
   analytics:
     servicename: analytics
     serviceprestart: analytics-prestart
@@ -611,7 +586,7 @@ services:
       - lookupsvc
       - vmafdd
       - vpxd
-    parent_id: 32
+    parent_id: 35
   sps:
     servicename: sps
     serviceprestart: sps-prestart
@@ -630,8 +605,9 @@ services:
     log:
       - ./sps/sps.log
     dp_service:
-      - lookupsvc
-    parent_id: 31
+      - vpxd-svcs
+      - vpxd
+    parent_id: 36
   vsm:
     servicename: vsm
     serviceprestart: vsm-prestart
@@ -649,8 +625,8 @@ services:
     log:
       - ./vsm/vsm.log
     dp_service:
-      - vpxd
-    parent_id: 29
+      - vsphere-ui
+    parent_id: 37
   updatemgr:
     servicename: updatemgr
     serviceprestart: updatemgr-prestart
@@ -666,13 +642,10 @@ services:
       - HAActive
     status: unknown
     log:
-      - ./updatemgr/updatemgr.log
+      - ./vmware-updatemgr/vum-server/vmware-vum-server.log
     dp_service:
-      - lookupsvc
-      - sts
       - vpxd
-      - vpxd-svcs
-    parent_id: 40
+    parent_id: 38
   vstats:
     servicename: vstats
     serviceprestart: vstats-prestart
@@ -688,14 +661,9 @@ services:
       - HAActive
     status: unknown
     log:
-      - ./vstats/vstats.log
-    dp_service:
-      - lookupsvc
-      - vmware-vpostgres
-      - vpxd
-      - vpxd-svcs
-      - vtsdb
-    parent_id: 33	
+      - ./vstats/vstats-telemetry.log
+    dp_service: []
+    parent_id: 39    
   vsan-health:
     servicename: vsan-health
     serviceprestart: vsan-health-prestart
@@ -711,12 +679,11 @@ services:
       - HAActive
     status: unknown
     log:
-      - ./vsan/health.log
+      - ./vsan/vmware-vsan-health-service.log
     dp_service:
-      - vmafdd
       - vmware-vpostgres
       - vpxd
-    parent_id: 28
+    parent_id: 40
   wcp:
     servicename: wcp
     serviceprestart: wcp-healthcmd
@@ -737,15 +704,13 @@ services:
     dp_service:
       - cis-license
       - eam
-      - envoy-sidecar
       - lookupsvc
       - sts
       - trustmanagement
       - vapi-endpoint
       - vmware-vpostgres
       - vpxd
-      - vpxd-svcs
-    parent_id: 38		
+    parent_id: 41        
   content-library:
     servicename: content-library
     serviceprestart: content-library-prestart
@@ -762,15 +727,8 @@ services:
     status: unknown
     log:
       - ./content-library/content-library.log
-    dp_service:
-      - rhttpproxy
-      - sca
-      - vapi-endpoint
-      - vmware-vpostgres
-      - vpxd
-      - vpxd-svcs
-      - wcp
-    parent_id: 44
+    dp_service: []
+    parent_id: 42
   perfcharts:
     servicename: perfcharts
     serviceprestart: perfcharts-prestart
@@ -791,7 +749,7 @@ services:
       - sca
       - vpxd
       - vsphere-ui
-    parent_id: 45
+    parent_id: 43
   imagebuilder:
     servicename: imagebuilder
     serviceprestart: ''
@@ -884,7 +842,7 @@ services:
     serviceprestart: ''
     servicehealthcmd: ''
     description: VMware VCSA Observability Service
-    id: 61
+    id: 51
     nameinlog: observabobservability
     level: 3
     type: system-control
@@ -893,13 +851,13 @@ services:
     log:
       - ./observability/observability.log
     dp_service: []
-    parent_id: null							
+    parent_id: null                            
   vmware-vdtc:
     servicename: vmware-vdtc
     serviceprestart: ''
     servicehealthcmd: ''
     description: VMware vSphere Distributed Tracing Collector
-    id: 62
+    id: 52
     nameinlog: vmware-vdtc
     level: 3
     type: system-control
@@ -914,7 +872,7 @@ services:
     serviceprestart: ''
     servicehealthcmd: ''
     description: VMware Patching and Host Management Service
-    id: 63
+    id: 53
     nameinlog: vmware-pod
     level: 3
     type: system-control
