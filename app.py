@@ -691,24 +691,24 @@ def upload_url():
     - 生成分析报告
     
     Returns:
-        JSON 响应，包含处理结果
+        JSON 响应，包含处理结果和重定向 URL
     """
     try:
         data = request.get_json()
         if not data or 'file_url' not in data:
-            return 'No URL provided', 400
+            return jsonify({'error': 'No URL provided'}), 400
         
         url = data['file_url']
         vcenter_version = data.get('vcenter_version')
         
         # 检查是否选择了版本
         if not vcenter_version:
-            return 'Please select vCenter version', 400
+            return jsonify({'error': 'Please select vCenter version'}), 400
             
         # 下载文件
         response = requests.get(url, stream=True)
         if not response.ok:
-            return 'Failed to download file', 400
+            return jsonify({'error': 'Failed to download file'}), 400
             
         # 创建临时文件
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -721,11 +721,7 @@ def upload_url():
                 if chunk:
                     f.write(chunk)
                     
-        # 根据版本选择配置文件
-        config_file = 'vcsa8u3-all-services.yaml' if vcenter_version == '8' else 'vcsa7u3-all-services.yaml'
-        config_path = os.path.join(BASE_DIR, 'configs', config_file)
-        
-        # 执行分析脚本时传入版本信息
+        # 执行分析脚本
         script_path = os.path.join(BASE_DIR, 'utils', 'vmon_log_analysis_service_combined.py')
         result = subprocess.run(
             ['python3', script_path, '--log-file', filepath, '--vcenter-version', vcenter_version],
@@ -734,19 +730,20 @@ def upload_url():
             check=False
         )
         
-        print("Analysis output:", result.stdout)
-        print("Analysis error output:", result.stderr)  # 打印错误输出
-        
         if result.returncode != 0:
-            return f'Error processing log file: {result.stderr}', 500
+            return jsonify({'error': f'Error processing log file: {result.stderr}'}), 500
         
-        return jsonify({'success': True})
+        # 返回成功响应，包含重定向 URL
+        return jsonify({
+            'success': True,
+            'redirect_url': url_for('matrix', vcenter_version=vcenter_version)
+        })
         
     except requests.exceptions.RequestException as e:
-        return f'Error downloading file: {str(e)}', 400
+        return jsonify({'error': f'Error downloading file: {str(e)}'}), 400
     except Exception as e:
         print(f"Error processing URL upload: {str(e)}")
-        return f'Error processing file: {str(e)}', 500
+        return jsonify({'error': f'Error processing file: {str(e)}'}), 500
 
 if __name__ == '__main__':
     # 本地开发时监听 127.0.0.1

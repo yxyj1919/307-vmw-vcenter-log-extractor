@@ -465,7 +465,7 @@
             });
         });
         
-        // URL表单验证
+        // URL表单提交处理
         const urlForm = document.querySelector('#urlSection form');
         const urlInput = document.querySelector('.url-input');
         const urlError = document.getElementById('urlError');
@@ -476,8 +476,15 @@
             const url = urlInput.value.trim();
             const version = document.getElementById('urlVcenterVersion').value;
             
+            // 验证 URL
             if (!url) {
                 showError('Please enter a URL');
+                return;
+            }
+            
+            // 验证版本选择
+            if (!version) {
+                showError('Please select a vCenter version');
                 return;
             }
             
@@ -487,6 +494,11 @@
             }
             
             try {
+                // 显示加载状态
+                const submitButton = urlForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span>Processing...</span>';
+                
                 const response = await fetch('/upload_url', {
                     method: 'POST',
                     headers: {
@@ -498,17 +510,26 @@
                     }),
                 });
                 
+                const data = await response.json();
+                
                 if (!response.ok) {
-                    const error = await response.text();
-                    showError(error);
+                    showError(data.error || 'Error processing file');
                     return;
                 }
                 
-                // 成功后重定向到矩阵页面
-                window.location.href = '/matrix';
+                if (data.success && data.redirect_url) {
+                    // 成功后重定向到矩阵页面
+                    window.location.href = data.redirect_url;
+                } else {
+                    showError('Unexpected response from server');
+                }
                 
             } catch (error) {
                 showError('Error uploading file: ' + error.message);
+            } finally {
+                // 恢复按钮状态
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<span>Download & Analyze</span><span>→</span>';
             }
         });
         
