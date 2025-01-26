@@ -1,5 +1,23 @@
 # Changelog
 
+## [v1.0.0] - 2024-01-26
+
+### Changed
+- Upgraded to official release 1.0.0
+- UI Improvements:
+  - Enhanced navigation bar layout and styling
+  - Added back navigation button
+  - Improved version selector interface
+  - Unified service status display
+- Feature Enhancements:
+  - Improved service status analysis accuracy
+  - Optimized log processing performance
+  - Enhanced error handling and notifications
+- Code Improvements:
+  - Added comprehensive code documentation
+  - Improved code structure
+  - Enhanced error handling mechanisms
+
 ## [v0.1.0] - 2024-01-22
 
 ### Added

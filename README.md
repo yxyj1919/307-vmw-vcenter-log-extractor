@@ -16,3 +16,4 @@ A web-based tool for analyzing vCenter Server vmon.log files and visualizing ser
 
 ## Version
 - v0.1.0 2025-01-22
+- v1.0.0 2025-01-26 
