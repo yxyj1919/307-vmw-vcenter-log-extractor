@@ -388,6 +388,15 @@
         @media (max-width: 768px) {
             /* 移动设备适配 */
         }
+        
+        .profile-name {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -401,6 +410,8 @@
             <a href="/" class="navbar-brand">vCenter vMon Service Checker</a>
             <span class="version-divider">|</span>
             <span class="vcenter-version">vCenter {{ vcenter_version }}.x</span>
+            <span class="version-divider">|</span>
+            <span class="profile-name">Profile: {{ stats.profile }}</span>
             <span class="version-divider">|</span>
             <div class="service-stats">
                 <span class="stat-item">

@@ -523,29 +523,25 @@ def matrix():
     - 依赖关系
     """
     try:
-        # 从请求中获取 vcenter_version 参数
         vcenter_version = request.args.get('vcenter_version')
         if not vcenter_version:
             return redirect(url_for('upload'))
         
-        print(f"vCenter version received: {vcenter_version}")
-        
-        # 创建 ServiceConfig 实例时传递 vcenter_version
         service_config = ServiceConfig(vcenter_version=vcenter_version)
         service_config.load_configs()
         
-        # 生成矩阵数据
         matrix = service_config.get_matrix_data()
-        print(f"Matrix size: {len(matrix)}x{len(matrix[0])}")
         
-        # 计算统计信息
+        # 获取 profile 信息
+        profile_name = service_config.status_data.get('profile', 'Unknown')
+        
         stats = {
             'system_control': 0,
             'vmon_control': 0,
             'running': 0,
             'failed': 0,
             'stopped': 0,
-            'profile': service_config.status_data.get('profile', 'Unknown')
+            'profile': profile_name  # 添加 profile 到统计信息中
         }
         
         # 遍历所有服务统计数量
